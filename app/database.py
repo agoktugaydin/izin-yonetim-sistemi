@@ -29,11 +29,13 @@ class DBUser(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, index=True)
     email = Column(String, index=True)
+    company = Column(String, index=True)
     
     def to_dict(self):
         return {
             "id": self.id,
             "name": self.name,
-            "email": self.email
+            "email": self.email,
+            "company": self.company
             # Add other attributes if needed
         }

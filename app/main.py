@@ -34,7 +34,7 @@ def get_users():
 # Endpoint to save a new user
 @app.post("/users/", status_code=201)
 def save_user(user: User):
-    db_user = DBUser(name=user.name, email=user.email)
+    db_user = DBUser(name=user.name, email=user.email, company=user.company)
     session = SessionLocal()
     session.add(db_user)
     session.commit()
