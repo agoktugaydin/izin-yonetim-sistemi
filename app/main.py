@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException
-
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 from .database import DBUser, SessionLocal
+import os
 
 import sys
 sys.path.append('.')
@@ -12,6 +13,13 @@ from .models.user import User
 
 
 app = FastAPI()
+
+
+@app.get("/", response_class=HTMLResponse)
+async def get_home():
+    html_path = os.path.join(os.path.dirname(__file__), "html/home.html")
+    with open(html_path, "r") as file:
+        return file.read()
 
 # Endpoint to get users
 @app.get("/users/", response_model=list[User])
@@ -32,3 +40,4 @@ def save_user(user: User):
     session.commit()
     session.close()
     return {"message": "User created successfully"}
+
