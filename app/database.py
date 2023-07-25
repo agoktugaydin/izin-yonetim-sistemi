@@ -30,12 +30,14 @@ class DBUser(Base):
     name = Column(String, index=True)
     email = Column(String, index=True)
     company = Column(String, index=True)
+    title = Column(String, index=True, nullable=True)
     
     def to_dict(self):
         return {
             "id": self.id,
             "name": self.name,
             "email": self.email,
-            "company": self.company
+            "company": self.company,
+            "title": self.title
             # Add other attributes if needed
         }

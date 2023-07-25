@@ -24,20 +24,28 @@ async def get_home():
 # Endpoint to get users
 @app.get("/users/", response_model=list[User])
 def get_users():
-    session = SessionLocal()
-    users = session.query(DBUser).all()
-    session.close()
-    # Convert each DBUser object to a dictionary using the to_dict() method
-    user_dicts = [user.to_dict() for user in users]
+    try:
+        session = SessionLocal()
+        users = session.query(DBUser).all()
+        session.close()
+        # Convert each DBUser object to a dictionary using the to_dict() method
+        user_dicts = [user.to_dict() for user in users]
+    except Exception as e:
+        return {"message": "Error getting users" + str(e)}
     return user_dicts
 
 # Endpoint to save a new user
 @app.post("/users/", status_code=201)
 def save_user(user: User):
-    db_user = DBUser(name=user.name, email=user.email, company=user.company)
-    session = SessionLocal()
-    session.add(db_user)
-    session.commit()
-    session.close()
+    try:
+        db_user = DBUser(name=user.name, email=user.email, company=user.company, title=user.title) # Create a DBUser object from the User model
+        print(db_user.to_dict())
+        session = SessionLocal()
+        session.add(db_user)
+        session.commit()
+        session.close()
+    except Exception as e:
+        return {"message": "Error saving user" + str(e)}
+
     return {"message": "User created successfully"}
 
