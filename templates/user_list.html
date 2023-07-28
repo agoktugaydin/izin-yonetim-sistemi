@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>User List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+
+        h1 {
+            color: #007BFF;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+
+        /* Pagination Section */
+        .pagination {
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            color: #007BFF;
+            padding: 8px 16px;
+            text-decoration: none;
+            border: 1px solid #007BFF;
+            border-radius: 5px;
+            margin: 0 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .pagination a.active {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .pagination a:hover:not(.active) {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .pagination a:hover {
+            background-color: white;
+            color: #007BFF;
+        }
+
+        /* Add style to the page numbers container */
+        #page-numbers {
+            margin-top: 10px;
+        }
+
+        /* Add CSS for the Navigation Bar (navbar) */
+        header {
+            background-color: #007BFF;
+            padding: 10px 0;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+        }
+
+        .navbar-icon {
+            font-size: 24px;
+            color: white;
+        }
+
+        .navbar-button {
+            padding: 8px 16px;
+            border: 1px solid white;
+            border-radius: 5px;
+            background-color: transparent;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .navbar-button:hover {
+            background-color: white;
+            color: #007BFF;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <nav class="navbar">
+            <span class="navbar-icon">
+                <i class="fas fa-home"></i>
+                <a class="navbar-button" href="http://localhost:8000/">Home</a>
+            </span>
+
+        </nav>
+    </header>
+
+
+    <h1>User List</h1>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Company</th>
+            <th>Title</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.company }}</td>
+            <td>{{ user.title }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Pagination section -->
+    <div class="pagination" id="pagination">
+        <!-- Pagination links will be added here -->
+        <a href="#" id="id-prev" style="visibility: hidden" onclick="prevPage()">Previous</a>
+        <span id="page-numbers"></span>
+        <a href="#" id="id-next" onclick="nextPage()">Next</a>
+    </div>
+
+    <script>
+        // Variables to track the current page and total number of pages
+        let currentPage = 1;
+        const rows = document.querySelectorAll("table tr");
+        const itemsPerPage = 5; // Set the number of items per page
+        const pageCount = Math.ceil(rows.length / itemsPerPage);
+
+        // Function to handle pagination
+        function showPage(pageNum) {
+            currentPage = pageNum;
+            const startIndex = (pageNum - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+
+            rows.forEach((row, index) => {
+                if (index >= startIndex && index < endIndex) {
+                    row.style.display = "table-row";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+
+            // Update the page numbers display
+            const pageNumbersDiv = document.getElementById("page-numbers");
+            let paginationHTML = "";
+            for (let i = 1; i <= pageCount; i++) {
+                if (i === pageNum) {
+                    paginationHTML += `<a href="#" onclick="showPage(${i})" class="active">${i}</a> `;
+                } else {
+                    paginationHTML += `<a href="#" onclick="showPage(${i})">${i}</a> `;
+                }
+            }
+            pageNumbersDiv.innerHTML = paginationHTML;
+
+            // Set the "active" class on the current page number link
+            const pageLinks = document.querySelectorAll(".pagination a");
+            pageLinks.forEach((link) => {
+                link.classList.remove("active");
+            });
+            pageLinks[currentPage].classList.add("active");
+
+            // Update visibility of previous and next links
+            if (currentPage > 1) {
+                document.getElementById("id-prev").style.visibility = "visible";
+            } else {
+                document.getElementById("id-prev").style.visibility = "hidden";
+            }
+
+            if (currentPage == pageCount) {
+                document.getElementById("id-next").style.visibility = "hidden";
+            } else {
+                document.getElementById("id-next").style.visibility = "visible";
+            }
+        }
+
+        // Function to navigate to the previous page
+        function prevPage() {
+            if (currentPage > 1) {
+                showPage(currentPage - 1);
+            }
+        }
+
+        // Function to navigate to the next page
+        function nextPage() {
+            if (currentPage < pageCount) {
+                showPage(currentPage + 1);
+            }
+        }
+
+        // Call the function to create pagination links and show the first page by default
+        showPage(1);
+    </script>
+
+
+</body>
+
+</html>

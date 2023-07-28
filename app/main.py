@@ -1,5 +1,6 @@
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Request, status
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse, RedirectResponse
 from .database import DBUser, SessionLocal
 import os
 
@@ -11,19 +12,30 @@ sys.path.append('./models')
 
 from .models.user import User
 
+import ptvsd
+
+# Enable ptvsd remote debugging
+ptvsd.enable_attach(address=('localhost', 5678))
 
 app = FastAPI()
+templates = Jinja2Templates(directory="templates")
 
 
 @app.get("/", response_class=HTMLResponse)
-async def get_home():
-    html_path = os.path.join(os.path.dirname(__file__), "html/home.html")
-    with open(html_path, "r") as file:
-        return file.read()
+async def get_home(request: Request):
+    title = "İzin Yönetim Uygulaması"
+    description = "Bu uygulama çalışanların izin talep edebilmesini ve yetkililerin izinleri yönetebilmesini sağlar."
+    return templates.TemplateResponse("home.html", 
+          {
+            "request": request,
+            "title": title,
+            "description": description,
+          }
+)
 
 # Endpoint to get users
-@app.get("/users/", response_model=list[User])
-def get_users():
+@app.get("/users/", response_class=HTMLResponse)
+async def get_users(request: Request):
     try:
         session = SessionLocal()
         users = session.query(DBUser).all()
@@ -31,21 +43,32 @@ def get_users():
         # Convert each DBUser object to a dictionary using the to_dict() method
         user_dicts = [user.to_dict() for user in users]
     except Exception as e:
-        return {"message": "Error getting users" + str(e)}
-    return user_dicts
+        error = "Error getting users" + str(e)
+        return templates.TemplateResponse("error.html", {"request": request, "error": error})
+    return templates.TemplateResponse("user_list.html", {"request": request, "users": user_dicts})
 
 # Endpoint to save a new user
-@app.post("/users/", status_code=201)
-def save_user(user: User):
+@app.post("/users/", response_class=HTMLResponse)
+async def save_user(request: Request):
     try:
-        db_user = DBUser(name=user.name, email=user.email, company=user.company, title=user.title) # Create a DBUser object from the User model
-        print(db_user.to_dict())
+        user_json = await request.json()
+        # Extract the user data from the JSON request
+        name = user_json["name"]
+        email = user_json["email"]
+        company = user_json["company"]
+        title = user_json["title"]
+        # Create a User object from the extracted user data 
+        user = User(name=name, email=email, company=company, title=title)
+
+        # Create a DBUser object from the User object
+        db_user = DBUser(name=user.name, email=user.email, company=user.company, title=user.title) 
+        
+
         session = SessionLocal()
         session.add(db_user)
         session.commit()
         session.close()
     except Exception as e:
-        return {"message": "Error saving user" + str(e)}
-
-    return {"message": "User created successfully"}
-
+        error = "Error creating user" + str(e)
+        return templates.TemplateResponse("error.html", {"request": request, "error": error})  
+    return RedirectResponse(url="/users", status_code=status.HTTP_303_SEE_OTHER)

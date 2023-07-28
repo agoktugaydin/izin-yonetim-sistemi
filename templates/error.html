@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Error 404 - Page Not Found</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+
+        h1 {
+            color: #007BFF;
+        }
+
+        .error-message {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        .error-code {
+            font-size: 64px;
+            font-weight: bold;
+            color: #007BFF;
+        }
+
+        .home-link {
+            margin-top: 20px;
+            display: inline-block;
+            padding: 10px 20px;
+            border: 1px solid #007BFF;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+        }
+
+        .home-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Oops! Something happened.</h1>
+    <div class="error">
+        <p>{{errorMessage}}</p>
+    </div>
+    <a class="home-link" href="/">Go to Homepage</a>
+</body>
+
+</html>
