@@ -11,19 +11,5 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  fastapi:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: my_fastapi
-    ports:
-      - "8000:8000"
-    depends_on:
-      - postgres
-    env_file:
-      - ./.env
-    links:
-      - postgres
-
 volumes:
   postgres_data:

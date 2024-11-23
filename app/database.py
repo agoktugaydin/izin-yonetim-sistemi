@@ -7,7 +7,7 @@ sys.path.append('.')
 sys.path.append('../')
 sys.path.append('../app/')
 
-from .config import Settings
+from config import Settings
 
 settings = Settings()
 SQLALCHEMY_DATABASE_URL = settings.database_url

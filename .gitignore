@@ -22,8 +22,10 @@ venv
 docs.zip
 archive.zip
 notes.txt
+to-do.txt
 
 # vim temporary files
 *~
 .*.sw?
 .cache
+
